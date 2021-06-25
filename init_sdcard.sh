@@ -23,6 +23,9 @@ while getopts ":a:d:e:g:r:s" opt; do
       r)
     PWR_CONF="dtparam=pwr_led_trigger=$OPTARG"
     ;;
+      p)
+    USERPASS=$OPTARG
+    ;;
       s)
 	 DRYRUN=1
 	 ;;
@@ -41,7 +44,7 @@ shift $((OPTIND-1))
 HOSTS=("$@")
 
 if [ -z "${HOSTS[0]}" ] || [ -z "$DEVICE" ]; then
-   echo "Usage: $0 [-a ssh_public_key] -d usb_device -e essid [-g green_led_trigger ] [-r red_led_trigger ] hostname(s)"
+   echo "Usage: $0 [-a ssh_public_key] -d usb_device -e essid [-g green_led_trigger ] [-r red_led_trigger ] [-p addusername:addpassword] hostname(s)"
    exit
 fi
 
@@ -161,6 +164,12 @@ for HOST in "${HOSTS[@]}"; do
    fi
 
 done
+
+if [ -n "$USERPASS" ]; then
+   echo "Adding user $USERPASS"
+   #echo 'pi:newpassword' | chpasswd # change user pi password to newpassword
+   echo $USERPASS | chpasswd # change user pi password to newpassword
+fi
 
 echo
 echo "sudo rmdir $ROOTFS_DIR"
